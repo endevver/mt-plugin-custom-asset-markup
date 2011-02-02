@@ -1,0 +1,290 @@
+<mt:ignore>
+#############################################################################
+#############################################################################
+##                     CUSTOM ASSET MARKUP TEMPLATE                        ##
+##                                                                         ##
+##  This template was created by the CustomAssetMarkup plugin to enable    ##
+##  you to define the exact markup that assets inserted into entries are   ##
+##  enclosed with.                                                         ##
+##                                                                         ##
+##  For more details, please see the documentation located at              ##
+##  https://trac.endevver.com/movabletype/wiki/plugins/customassetmarkup   ##
+##                                                                         ##
+#############################################################################
+#############################################################################
+</mt:ignore>
+
+
+<mt:ignore>
+#############################################################################
+#############################################################################
+##                       GLOBAL VARIABLE ASSIGNMENT                        ##
+##    In this section we assign some variables for items we'll use later   ##
+#############################################################################
+#############################################################################
+</mt:ignore>
+<mt:ignore>
+### TEXT WRAP/ALIGNMENT STYLES - Creates styles for text wrapping/alignment
+</mt:ignore>
+<mt:setvarblock name="wrap_style">
+    <mt:if name="wrap_text"><mt:if name="align">
+        class="mt-image-<$mt:var name="align"$>"
+        <mt:if name="align" eq='left'>
+            style="float: left; margin: 0 20px 20px 0;"
+        <mt:elseif name="align" eq='right'>
+            style="float: right; margin: 0 0 20px 20px;"
+        <mt:elseif name="align" eq='center'>
+            style="text-align: center; display: block; margin: 0 auto 20px;"
+        </mt:if>
+    </mt:if></mt:if>
+</mt:setvarblock>
+<mt:var name="wrap_style" strip_linefeeds="1" strip=" " setvar="wrap_style">
+
+<mt:ignore>
+### IMAGE DIMENSIONS - For images, get the displayed height and width
+</mt:ignore>
+<mt:setvarblock name="dimensions">
+    <mt:if tag="AssetType" eq="image">
+        <mt:if name="thumb">
+            width="<$mt:var name="thumb_width"$>"
+            height="<$mt:var name="thumb_height"$>"
+        <mt:else>
+            width="<$mt:var name="full_width"$>"
+            height="<$mt:var name="full_height"$>"
+        </mt:if>
+    </mt:if>
+</mt:setvarblock>    
+<mt:var name="dimensions" strip_linefeeds="1" strip=" " setvar="dimensions">
+
+<mt:ignore>
+### ENCLOSURE FLAG - Enclose unless otherwise specified
+</mt:ignore>
+<mt:IfNonEmpty name="enclose"><mt:var name="enclose" value="1"></mt:IfNonEmpty>
+
+
+<mt:ignore>
+#############################################################################
+#############################################################################
+##                    ASSET INSERTION MARKUP MODELS                        ##
+##  The following sections are mini-templates covering the variety of ways ##
+##  assets can be inserted into entries.                                   ##
+#############################################################################
+#############################################################################
+</mt:ignore>
+
+<mt:ignore>
+###############################  asset  #####################################
+##### BASIC ASSETS
+##### This template covers assets which are inserted as a basic link.  Any 
+##### type of asset can be inserted this way, including images.
+</mt:ignore>
+<mt:SetVarTemplate name="asset">
+    <a href="<$mt:AssetURL$>">
+        <mt:if tag="AssetType" eq="image">
+            View image
+        <mt:else>
+            <$mt:AssetFileName$>
+        </mt:if>
+    </a>
+</mt:SetVarTemplate>
+
+
+<mt:ignore>
+###############################  image  #####################################
+##### BASIC IMAGE ASSET
+##### This template covers a full-sized, embedded image asset
+</mt:ignore>
+<mt:SetVarTemplate name="image">
+    <img alt="<$mt:AssetLabel encode_html="1"$>"
+         src="<$mt:AssetURL$>" <$mt:var name="dimensions"$>
+         <$mt:var name="wrap_style"$> />
+</mt:SetVarTemplate>
+
+
+<mt:ignore>
+#############################  image.thumb  #################################
+##### This template covers an image that is displayed as a thumbnail which
+##### is linked to the original asset
+</mt:ignore>
+<mt:SetVarTemplate name="image_thumb">
+    <a href="<$mt:AssetURL$>">
+        <img alt="<$mt:AssetLabel encode_html="1"$>"
+             src="<$mt:AssetThumbnailURL$>" 
+             <$mt:var name="dimensions"$>
+             <$mt:var name="wrap_style"$> />
+     </a>
+</mt:SetVarTemplate>
+
+
+<mt:ignore>
+############################  image.popup  ##################################
+##### This template covers an image that is displayed as a thumbnail which
+##### is linked to a popup window containing the original asset
+</mt:ignore>
+<mt:SetVarTemplate name="image_popup">
+<mt:asset id="$popup_asset_id">
+    <$mt:AssetURL setvar="popup_url"$>
+</mt:asset>
+    <a href="<$mt:var name="popup_url"$>"
+        onclick="window.open('<$mt:var name="popup_url" encode_js="1"$>',
+        'popup','width=<$mt:var name="full_width"$>,
+        height=<$mt:var name="full_height"$>,scrollbars=no,resizable=no,
+        toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,
+        top=0'); return false">
+        View image
+    </a>
+</mt:SetVarTemplate>
+
+
+<mt:ignore>
+########################  image.thumb.popup  ################################
+##### This template covers an image that is displayed as a thumbnail which
+##### is linked to a popup window containing the original asset
+</mt:ignore>
+<mt:SetVarTemplate name="image_thumb_popup">
+    <mt:asset id="$popup_asset_id">
+        <$mt:AssetURL setvar="popup_url"$>
+    </mt:asset>
+    <mt:SetVarBlock name="assetlink">
+        <img src="<$mt:AssetThumbnailURL$>"
+            <$mt:var name="dimensions"$>
+            alt="<$mt:AssetLabel encode_html="1"$>"
+            <$mt:var name="wrap_style"$> />
+    </mt:SetVarBlock>
+
+    <a href="<$mt:var name="popup_url"$>"
+        onclick="window.open('<$mt:var name="popup_url" encode_js="1"$>',
+        'popup','width=<$mt:var name="full_width"$>,
+        height=<$mt:var name="full_height"$>,scrollbars=no,resizable=no,
+        toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,
+        top=0'); return false">
+        <mt:var name="assetlink">
+    </a>
+</mt:SetVarTemplate>
+
+
+<mt:ignore>
+############################  enclosure  ####################################
+##### This template is the final wrapper for all of the above models.  The
+##### form is used by MT to associate the entry and asset together and is
+##### removed before output.  You should not futz with this one.
+</mt:ignore>
+<mt:SetVarTemplate name="enclosure">
+    <form mt:asset-id="<$mt:AssetID$>"
+        class="mt-enclosure mt-enclosure-<$mt:AssetType$>"
+        style="display: inline;">
+        <$mt:var name="output_html"$>
+    </form>
+}
+</mt:SetVarTemplate>
+
+
+<mt:ignore>
+#############################################################################
+#############################################################################
+##                  CALCULATION OF INSERT FUNCTION                         ##
+##  The following section figures out which model the user has chosen and  ##
+##  evaluates the model's mini-template.                                   ##
+#############################################################################
+#############################################################################
+###
+### Flip the flags for asset types and paramters
+###
+</mt:ignore>
+<mt:unless name="include">
+
+    <mt:var name="asset_vars" function="push" value="asset">
+
+<mt:else>
+    <$mt:var name="asset_vars" function="push" value="image"$>
+
+    <mt:if name="thumb">
+        <$mt:var name="asset_vars" function="push" value="thumb"$>
+    </mt:if>
+
+    <mt:if name="popup">
+        <$mt:var name="asset_vars" function="push" value="popup"$>
+    </mt:if>
+
+</mt:unless>
+
+
+<mt:ignore>
+###
+### Join the flags together to create a function name in 'insert_function'
+###
+</mt:ignore>
+<$mt:var name="asset_vars" glue="_" setvar="insert_function"$>
+
+
+<mt:ignore>
+###
+### Execute the insert_function and dump HTML output to $output_html
+###
+</mt:ignore>
+<$mt:var name="$insert_function" setvar="output_html"$>
+
+
+<mt:ignore>
+###
+### Unless otherwise specified, wrap $output_html in the enclosure markup
+### for proper entry-asset correlation.
+###
+</mt:ignore>
+<mt:if name="enclose">
+    <$mt:var name="enclosure" strip_linefeeds="1" strip=" "$>
+<mt:else>
+    <$mt:var name="output_html" strip_linefeeds="1" strip=" "$>
+</mt:if>
+
+<mt:ignore>
+DEBUGGING: IGNORE...
+========================================================================
+AssetID            = <mt:AssetID>
+AssetFileName      = <mt:AssetFileName>
+AssetLabel         = <mt:AssetLabel>
+AssetURL           = <mt:AssetURL>
+AssetType          = <mt:AssetType>
+AssetMimeType      = <mt:AssetMimeType>
+AssetFilePath      = <mt:AssetFilePath>
+AssetDateAdded     = <mt:AssetDateAdded>
+AssetAddedBy       = <mt:AssetAddedBy>
+AssetProperty      = <mt:AssetProperty>
+AssetFileExt       = <mt:AssetFileExt>
+AssetThumbnailURL  = <mt:AssetThumbnailURL>
+AssetLink          = <mt:AssetLink>
+AssetThumbnailLink = <mt:AssetThumbnailLink>
+AssetDescription   = <mt:AssetDescription>
+
+<mt:AssetIfTagged>
+This entry is tagged:  <mt:AssetTags glue=", "><mt:TagName></mt:AssetTags>
+</mt:AssetIfTagged>
+============
+
+Params:
+magic_token    = <mt:var name="magic_token">
+fname          = <mt:var name="fname">
+include        = <mt:var name="include">
+thumb          = <mt:var name="thumb">
+middle_path    = <mt:var name="middle_path">
+__mode         = <mt:var name="__mode">
+edit_field     = <mt:var name="edit_field">
+url            = <mt:var name="url">
+blog_id        = <mt:var name="blog_id">
+id             = <mt:var name="id">
+site_path      = <mt:var name="site_path">
+wrap_text      = <mt:var name="wrap_text">
+full_height    = <mt:var name="full_height">
+align          = <mt:var name="align">
+new_entry      = <mt:var name="new_entry">
+extra_path     = <mt:var name="extra_path">
+_type          = <mt:var name="_type">
+thumb_width    = <mt:var name="thumb_width">
+description    = <mt:var name="description">
+tags           = <mt:var name="tags">
+full_width     = <mt:var name="full_width">
+thumb_asset_id = <mt:var name="thumb_asset_id">
+label          = <mt:var name="label">
+thumb_height   = <mt:var name="thumb_height">
+
+</mt:ignore>
